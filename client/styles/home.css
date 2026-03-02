@@ -1,0 +1,60 @@
+.custom-button{
+    background: var(--primary-color);
+    color: white;
+    padding: .5rem 2rem;
+    border-radius: .5rem;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+
+/* Hide scrollbar for WebKit browsers (Chrome, Safari) */
+html::-webkit-scrollbar, body::-webkit-scrollbar {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .subheading {
+    font-size: 34px; /* Increase font size for tablets */
+  }
+}
+
+@media (min-width: 1024px) {
+  .subheading {
+    font-size: 40px; /* Your original size for desktops */
+  }
+}
+@media (min-width: 1280px) {
+  .subheading {
+    font-size: 44px; /* Optionally increase further */
+  }
+}
+
+@keyframes float {
+    0%, 100% {
+      transform: translate(-50%, -50%) translateX(-5px);
+    }
+    50% {
+      transform: translate(-50%, -50%) translateX(5px);
+    }
+  }
+
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+
+/* Mobile navbar styles */
+@media (max-width: 889px) {
+  .glassy-div {
+    padding: 0.75rem 1rem;
+  }
+
+  .mobile-menu-container {
+    max-height: 80vh;
+    overflow-y: auto;
+    margin-top: 0.5rem;
+    width: calc(100% - 2rem);
+    margin-left: auto;
+    margin-right: auto;
+  }
+}

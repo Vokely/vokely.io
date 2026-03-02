@@ -1,0 +1,8 @@
+.resume{
+    border: 1px solid rgba(128, 128, 128, 0.301);
+    height: 240px;
+    width: 170px;
+    border-radius: 2px;
+    display: grid;
+    place-items: center;
+}

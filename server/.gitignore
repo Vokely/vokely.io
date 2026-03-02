@@ -1,0 +1,16 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+my_env/
+myenv/
+.venv/
+test/
+.env
+__pycache__/
+testfiles/
+/venv
+tts-service*.json
+gcp-json.json
+.kiro
+.DS_Store

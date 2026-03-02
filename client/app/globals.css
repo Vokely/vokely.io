@@ -1,0 +1,200 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary-color: rgb(52, 46, 229);
+  --half-white : #E6E6E6;
+  --baba : #bababa;
+}
+
+html,
+body {
+  font-size: 16px;
+  font-family: var(--font-sans);
+}
+/* Horizontal scrollbar styles */
+::-webkit-scrollbar {
+  height: 12px; /* Height for horizontal scrollbar */
+  width: 12px;  /* Width for vertical scrollbar */
+}
+
+/* Thumb for both axes */
+::-webkit-scrollbar-thumb {
+  background: #bababa;
+  border-radius: 6px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+
+/* Optional: Specific for horizontal scrollbar thumb (stronger styling if needed) */
+.mobile-resume-container::-webkit-scrollbar-thumb {
+  background-color: #b6b6b691;
+  opacity: 0.7;
+  height: 10px;
+  border-radius: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Corner */
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+  input::selection,textarea::selection{
+    color: rgb(52,46,229) !important;
+    background: rgb(52,46,229,.2);
+  }
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important; /* Change background color */
+    -webkit-text-fill-color: black !important; /* Change text color */
+    transition: background-color 5000s ease-in-out 0s; /* Prevent background color change */
+  }
+
+  input[type="checkbox"] {
+    appearance: checkbox;
+    background: transparent !important;
+  }
+  textarea {
+    user-select: text; /* Allow text selection */
+    -webkit-user-drag: none; /* Disable dragging in WebKit browsers */
+    -moz-user-drag: none; /* Disable dragging in Firefox */
+    -ms-user-drag: none; /* Disable dragging in Edge */
+    resize: none; /* Optional: Disable resizing */
+  }
+  .clip-arc {
+    clip-path: path('M0,150 A150,150 0 0,1 300,150 L300,0 L0,0 Z');
+  }
+  
+  @layer base {
+    img {
+      @apply inline-block;
+    }
+  }
+
+  @keyframes moveWaves {
+    0% {
+      background-position-x: 0;
+    }
+    100% {
+      background-position-x: 1000px;
+    }
+  }
+
+  .wave-animation {
+    animation: moveWaves 10s linear infinite;
+  }
+  @keyframes jiggle {
+    0%, 100% {
+      transform: rotate(0deg);
+    }
+    15% {
+      transform: rotate(10deg);
+    }
+    30% {
+      transform: rotate(-10deg);
+    }
+    45% {
+      transform: rotate(6deg);
+    }
+    60% {
+      transform: rotate(-6deg);
+    }
+    75% {
+      transform: rotate(8deg);
+    }
+    90% {
+      transform: rotate(-8deg);
+    }
+  }
+  
+  .animate-jiggle {
+    animation: jiggle 2.5s infinite ease-in-out;
+    display: inline-block;
+    transform-origin: center;
+  }
+  
+@layer utilities {
+  .btn-primary {
+    @apply rounded-3xl bg-primary px-6 py-6 text-xl text-white hover:bg-hover;
+  }
+  .img-container {
+    @apply overflow-hidden;
+  }
+  .img-container img {
+    @apply h-[100%] w-[100%] object-contain;
+  }
+  .smooth{
+    @apply transition-all duration-300 ease-in-out;
+  }
+  .bg-purple-gradient {
+    background: linear-gradient(
+      225deg,
+      rgba(52, 46, 229, 0.7) 28.16%,
+      #ffffff 100.36%
+    );
+  }
+  .bt {
+    @apply border-2 border-solid border-red-500;
+  }
+  .border-light-gray{
+    @apply border-[1px] border-gray-100;
+  }
+  .text-gradient {
+    background: linear-gradient(
+      90deg,
+      #fb4a1d 0%,
+      #f48164 22%,
+      #e7439d 48%,
+      #6684ff 69.5%,
+      #843bf8 87%,
+      #a03cf8 100%
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .bg-multi-gradient{
+    background: linear-gradient(
+      90deg,
+      #fb4a1d 0%,
+      #f48164 22%,
+      #e7439d 48%,
+      #6684ff 69.5%,
+      #843bf8 87%,
+      #a03cf8 100%
+    );
+  }
+  .glassy-div {
+    background-color: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+  /* Hide scrollbar for Chrome, Safari, and Opera */
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .hide-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+  .img-container{
+    overflow: hidden;
+  }
+  .img-container img{
+    height: 100%;
+    width: 100%;
+    object-fit: contain;
+  }
+  .disable-screen{
+  background: rgba(0, 0, 0, 0.60);
+  z-index: 99;
+  color: rgb(177, 110, 231) !important;
+  }
+}

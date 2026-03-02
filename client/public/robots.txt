@@ -1,0 +1,9 @@
+# Allow all search engines to crawl the entire website
+User-agent: *
+Allow: /
+
+# Allow Googlebot to crawl everything, even if blocked for other bots
+User-agent: Googlebot
+
+# Sitemap location for crawlers
+Sitemap: https://vokely.io/sitemap.xml

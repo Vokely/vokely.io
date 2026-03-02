@@ -1,0 +1,23 @@
+label{
+    font-size: 18px;
+    font-weight: 500;
+    text-align: left;
+    /* border:1px solid red; */
+    width: 90%;
+}
+.labeltext{
+    font-size: 14px;
+    color: #999;
+}
+.userinput{
+    border:1px solid #bababa;
+    padding: .5rem;
+    border-radius: .5rem;
+    width: 90%;
+    padding:.5rem 1rem;
+    outline: none;
+    transition: all .3s ease-in-out;
+}
+.userinput:hover, .userinput:focus{
+    border:1px solid var(--primary);
+}

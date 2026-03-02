@@ -1,0 +1,113 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.form-container {
+  font-size: 16px;
+}
+
+.form-container label {
+  color: #6b6b6b;
+  font-size: 16px;
+}
+
+.form-input {
+  cursor: default;
+  width: 100%;
+  width: 30vw;
+  border-radius: 8px;
+  background-color: white;
+  padding: 0.75rem 1rem;
+  color: #363636;
+  outline: none;
+  border: 1px solid #bababa;
+  transition: all 0.3s ease-in-out;
+}
+.form-input-popup {
+  cursor: default;
+  width: 80%;
+  border-radius: 8px;
+  background-color: white;
+  padding: 0.75rem 1rem;
+  color: #363636;
+  outline: none;
+  border: 1px solid #bababa;
+  transition: all 0.3s ease-in-out;
+}
+
+
+.form-input-sm {
+  font-size: 14px;
+  cursor: default;
+  width: 30vw;
+  border-radius: 8px;
+  background-color: white;
+  padding: 0.75rem 1rem;
+  color: #363636;
+  outline: none;
+  border: 1px solid #bababa;
+  transition: all 0.3s ease-in-out;
+}
+
+@media (max-width: 640px) {
+  .form-input-sm, .form-input {
+    font-size: 13px;
+    padding: 0.5rem 0.75rem;
+    width: 400px;
+  }
+}
+
+@media (max-width: 480px) {
+  .form-input-sm,.form-input {
+    font-size: 13px;
+    padding: 0.5rem 0.75rem;
+    width: 90vw;
+  }
+}
+
+.form-input:hover,
+.form-input-sm:hover {
+  border: 1px solid var(--primary-color);
+}
+
+.form-input::placeholder,
+.form-input-sm::placeholder {
+  color: #9ca3af;
+}
+
+.form-input:focus,
+.form-input-sm:focus {
+  outline: none;
+}
+
+.error {
+  font-size: 14px;
+  color: red;
+}
+
+.provider-buttons {
+  @apply flex cursor-pointer items-center justify-center gap-4 rounded-md border border-solid border-[#bababa] bg-transparent px-2 py-2 text-black w-full;
+}
+
+.square-div {
+  height: 300px;
+  width: 300px;
+  border-radius: 1rem;
+  background-color: rgba(255, 255, 255, 0.199);
+  backdrop-filter: blur(2px);
+  border: 1px solid rgb(158, 158, 158);
+  z-index: 99;
+}
+
+.rectangle-div {
+  height: 400px;
+  width: 300px;
+  border-radius: 1rem;
+  background-color: black;
+  box-shadow: 0 1px 5px #cfde49;
+  z-index: 99;
+}
+
+.right-div-text {
+  @apply p-5 text-[24px] font-extrabold text-white;
+}

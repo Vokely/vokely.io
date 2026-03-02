@@ -1,0 +1,129 @@
+# Vokely.io - AI Resume Enhancer & AI Interviewer
+
+## Project Overview
+Vokely.io is a comprehensive AI-powered career development platform that helps job seekers optimize their resumes, prepare for interviews, and plan their career growth. The platform combines three core AI-driven tools to streamline the job search process and accelerate career development.
+
+Website: https://vokely.io/
+
+## Core Features & Products
+
+### 1. AI Resume Builder
+- **Purpose**: Create polished, professional resumes that get noticed by recruiters
+- **Key Capabilities**:
+  - Instant resume creation using AI
+  - Job description analysis and resume optimization
+  - ATS-friendly formatting (84 average ATS score)
+  - Compelling summary generation tailored to career goals
+  - Job-specific language transformation
+- **Statistics**: 50,000+ resumes created
+
+### 2. AI Interview Coach
+- **Purpose**: Simulate real-world interview scenarios with AI-powered feedback
+- **Key Capabilities**:
+  - 24/7 availability for practice sessions
+  - Mock interviews based on targeted roles
+  - Instant feedback on responses and tone
+  - 1000+ curated interview questions
+  - Confidence, clarity, and storytelling improvement
+- **Results**: 72% increased callback rate
+
+### 3. AI Career Roadmap
+- **Purpose**: Build customized career plans with actionable milestones
+- **Key Capabilities**:
+  - 100% personalized career plans
+  - Skills gap identification and learning recommendations
+  - Journey mapping to match career goals
+  - Adaptation for transitions, upskilling, and new ambitions
+- **Benefits**: 3x faster career clarity, 80% user satisfaction
+
+## Platform Statistics & Success Metrics
+- 50,000+ resumes optimized
+- 85% interview success rate
+- 120% average salary increase for users
+- 80% user satisfaction rate
+- Target market: Students, new professionals, and serious job seekers
+
+## Pricing Structure (Indian Market)
+### Free Tier
+- Price: ₹0 (Free)
+- Target: Students and new professionals
+- Includes: Resume editor, 3 AI resume credits, 1 mock interview, free templates
+
+### Silver Tier (Most Popular)
+- Price: ₹433/month (₹1299 quarterly - 28% savings)
+- Target: Serious job seekers
+- Includes: Unlimited AI resume, 5 mock interviews, skill gap analysis, 2 AI roadmaps
+
+### Gold Tier
+- Price: ₹829/month (₹2487 quarterly)
+- Target: Complete career transformation
+- Includes: Unlimited AI resume, 15 mock interviews, skill gap analysis, 10 AI roadmaps
+
+## Technical Approach
+- AI-powered resume analysis and optimization
+- Job description parsing and matching algorithms
+- ATS (Applicant Tracking System) optimization
+- Real-time interview simulation and feedback
+- Personalized career planning algorithms
+- Skills gap analysis and recommendation engine
+
+## Target Audience
+1. **Students**: Recent graduates entering the job market
+2. **New Professionals**: Early-career individuals seeking advancement
+3. **Job Seekers**: Active candidates looking for better opportunities
+4. **Career Changers**: Professionals transitioning between industries/roles
+5. **Upskilling Professionals**: Those looking to advance their current careers
+
+## Competitive Positioning
+Vokely.io differentiates itself in the AI resume builder market by:
+- Combining resume building, interview prep, and career planning in one platform
+- Offering localized pricing for the Indian market
+- Providing comprehensive career development beyond just resume creation
+- 24/7 AI interview coaching availability
+- Personalized career roadmapping with actionable milestones
+
+## User Journey & Process
+1. **Resume Creation**: Users input their information and job targets
+2. **AI Optimization**: Platform analyzes job descriptions and optimizes resumes
+3. **Interview Preparation**: Users practice with AI coach and receive feedback
+4. **Career Planning**: AI creates personalized roadmaps with skill recommendations
+5. **Continuous Improvement**: Platform adapts recommendations based on user progress
+
+## Key Value Propositions
+- **Speed**: Instant resume creation and optimization
+- **Precision**: AI-powered job matching and ATS optimization
+- **Preparation**: Comprehensive interview practice with real-time feedback
+- **Planning**: Future-proof career roadmaps with clear milestones
+- **Affordability**: Competitive pricing with significant quarterly savings
+- **Accessibility**: 24/7 availability for all tools and features
+
+## Brand Messaging
+- "Journey Towards Your Dream Job"
+- "Make it to Top 1% of Resumes"
+- "Crack Every Interview with AI-Powered Practice"
+- "Design a Future-Proof Career with AI Guidance"
+- "AI-powered precision meets unbeatable affordability"
+
+## Community & Support
+- Active user community for career development
+- Comprehensive support system
+- Educational resources and guidance
+- Regular feature updates and improvements
+
+## Technology Stack Considerations
+- AI/ML models for resume optimization and interview analysis
+- Natural language processing for job description analysis
+- ATS compatibility algorithms
+- Real-time feedback systems
+- Personalization engines
+- Scalable web infrastructure to handle 50,000+ users
+
+## Content Guidelines
+When creating content for Vokely.io:
+- Focus on career advancement and professional growth
+- Emphasize AI-powered precision and efficiency
+- Highlight measurable results and success statistics
+- Use encouraging, confidence-building language
+- Maintain professional yet approachable tone
+- Include specific metrics and achievements where possible
+- Address common job search pain points and anxieties
