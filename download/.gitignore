@@ -1,0 +1,14 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+my_env/
+.venv/
+test/
+.env
+__pycache__/
+testfiles/
+/venv
+temp/*
+package-lock.json
+node_modules/

@@ -18,6 +18,11 @@ Welcome to the Vokely.io repository! This open-source project is an AI-powered C
 - **AI/LLMs**: OpenAI, Google Generative AI (Gemini), Groq, DeepSeek, Llama
 - **Utilities**: SpaCy (NLP), PyMuPDF / PyTesseract (OCR), python-docx
 
+### Document & Download Service (`/download`)
+
+- **Framework**: FastAPI (Python)
+- **Utilities**: Playwright (PDF Generation, Scraping), BeautifulSoup4, Weasyprint
+
 ---
 
 ## 🛠️ Setting up the Development Environment
@@ -82,7 +87,7 @@ The backend is a FastAPI application that handles AI processing, database operat
    ```
 
 5. **Start the FastAPI server**:
-    ```bash
+   ```bash
    cd app
    ```
    ```bash
@@ -92,7 +97,49 @@ The backend is a FastAPI application that handles AI processing, database operat
 
 ---
 
-### 3. Frontend Setup (`/client`)
+### 3. Download Service Setup (`/download`)
+
+This service handles document generation (PDFs) and web scraping via Playwright.
+
+1. **Navigate to the download directory**:
+
+   ```bash
+   cd download
+   ```
+
+2. **Create and activate a virtual environment**:
+
+   ```bash
+   python -m venv venv
+   # On macOS/Linux:
+   source venv/bin/activate
+   # On Windows:
+   # venv\Scripts\activate
+   ```
+
+3. **Install dependencies**:
+
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Install Playwright Browsers**:
+   Playwright requires browser binaries to generate PDFs and scrape pages.
+
+   ```bash
+   playwright install
+   ```
+
+5. **Start the Download server**:
+   ```bash
+   cd app
+   uvicorn main:app --reload --port 8001
+   ```
+   _The download service will be running at `http://localhost:8001`._
+
+---
+
+### 4. Frontend Setup (`/client`)
 
 The frontend is a Next.js application with a modern UI relying on Tailwind CSS and Framer Motion.
 
@@ -116,7 +163,7 @@ The frontend is a Next.js application with a modern UI relying on Tailwind CSS a
    cp .env.example .env.local
    ```
 
-   _Ensure that `NEXT_PUBLIC_API_URL` or `API_URL` correctly points to your local backend (e.g., `http://localhost:8000/app`). You will also need to configure any OAuth keys (Google, LinkedIn) if you plan to use those features._
+   _Ensure that `NEXT_PUBLIC_API_URL` or `API_URL` correctly points to your local backend (e.g., `http://localhost:8000/app`), and `NEXT_PUBLIC_DOWNLOAD_API_URL` points to `http://localhost:8001/app`. You will also need to configure any OAuth keys (Google, LinkedIn) if you plan to use those features._
 
 4. **Start the Next.js development server**:
 
