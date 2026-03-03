@@ -1,6 +1,6 @@
 # Vokely.io
 
-Welcome to the Vokely.io repository! This open-source project is an AI-powered Interviewer and Resume Builder platform. The project is a full-stack application split into a **Next.js** frontend and a **FastAPI** backend.
+Welcome to the Vokely.io repository! This open-source project is an AI-powered Career platform built for job seekers. The project is a full-stack application split into a **Next.js** frontend and a **FastAPI** backend.
 
 ## 🚀 Tech Stack
 
