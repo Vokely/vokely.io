@@ -1,15 +1,13 @@
 'use client'
 import { useState } from 'react';
-import { getInterview, createVoiceInterviewSession } from '@/lib/interviewUtil';
+import { getInterview, startInterview } from '@/lib/interviewUtil';
 import useInterviewStore from '@/store/interviewStore';
-import { usePathname } from 'next/navigation'
 import Navbar from '@/components/layouts/Navbar';
 import { useRouter } from 'next/navigation';
 import SelectResumes from '@/components/interviewer/ResumeAccordian';
 import JD from '@/components/interviewer/JD';
 import useToastStore from '@/store/toastStore';
 import useJobStore from '@/store/prepareInterview';
-import useAlertStore from '@/store/alertDialogstore';
 import PermissionsModal from '@/components/interviewer/PermissionsModal';
 
 export default function InterviewerClient() {
@@ -17,9 +15,7 @@ export default function InterviewerClient() {
   const {jobDescription, setJobDescription, isPreparing, setIsPreparing,
     isResumesOpen, setIsResumesOpen, isResumeUploaded, setIsResumeUploaded, setSelectedFile, resumeId} = useJobStore();
   const addToast = useToastStore((state) => state.addToast);
-  const pathname = usePathname();
   const router = useRouter();
-  const openAlertDialog = useAlertStore((state) => state.openAlert);
   
   // New state for permissions modal
   const [isPermissionsModalOpen, setIsPermissionsModalOpen] = useState(false);
@@ -39,13 +35,7 @@ export default function InterviewerClient() {
 
   const handleStartClick = async () => {
     if (!validateInputs()) return;
-    
-    const generate = await openAlertDialog(
-      'Confirm',
-      'Start your interview at just 50 credits?'
-    );
 
-    if (!generate) return;
     localStorage.removeItem('interview-storage')
     // Save the current JD in case we need it after permissions
     setPendingJD(jobDescription);
@@ -60,29 +50,29 @@ export default function InterviewerClient() {
     try {
       setIsPreparing(true);
 
-      if (useVoiceInterview) {
-        // Voice Interview Flow
-        const voiceSession = await createVoiceInterviewSession(resumeId, jd);
+      // if (useVoiceInterview) {
+      //   // Voice Interview Flow
+      //   const voiceSession = await startInterview(resumeId, jd);
 
-        if (voiceSession && voiceSession.success) {
-          setTitle(voiceSession.title || 'Voice Interview');
+      //   if (voiceSession && voiceSession.success) {
+      //     setTitle(voiceSession.title || 'Voice Interview');
 
-          // Clear form data
-          setSelectedFile(null);
-          setJobDescription('');
-          setIsResumeUploaded(false);
-          localStorage.removeItem('job-store');
+      //     // Clear form data
+      //     setSelectedFile(null);
+      //     setJobDescription('');
+      //     setIsResumeUploaded(false);
+      //     localStorage.removeItem('job-store');
 
-          // Navigate to voice interview page
-          router.push(`ai-interviewer/${voiceSession.session_id}?voice=true`);
-        } else {
-          addToast('Failed to start voice interview', 'error', 'top-middle', 3000);
-          setSelectedFile(null);
-          setJobDescription('');
-          setIsResumeUploaded(false);
-          setIsResumesOpen(true);
-        }
-      } else {
+      //     // Navigate to voice interview page
+      //     router.push(`ai-interviewer/${voiceSession.session_id}?voice=true`);
+      //   } else {
+      //     addToast('Failed to start voice interview', 'error', 'top-middle', 3000);
+      //     setSelectedFile(null);
+      //     setJobDescription('');
+      //     setIsResumeUploaded(false);
+      //     setIsResumesOpen(true);
+      //   }
+      // } else {
         // Traditional Interview Flow
         const response = await getInterview(sessionId, jd);
         const responseJson = await response.json();
@@ -111,7 +101,7 @@ export default function InterviewerClient() {
           setIsResumeUploaded(false);
           setIsResumesOpen(true);
         }
-      }
+      // }
     } catch (error) {
       addToast('Failed to start interview', 'error', 'top-middle', 3000);
     } finally {
@@ -152,7 +142,7 @@ export default function InterviewerClient() {
         </div>
 
         {/* Interview Type Toggle */}
-        <div className='my-4 sm:my-6'>
+        {/* <div className='my-4 sm:my-6'>
           <div className='flex items-center justify-center gap-4 p-3 bg-gray-50 rounded-lg'>
             <span className='text-sm font-medium text-gray-700'>Interview Type:</span>
             <div className='flex items-center gap-2'>
@@ -183,7 +173,7 @@ export default function InterviewerClient() {
               Experience real-time voice conversation with Geneva using advanced AI technology
             </p>
           )}
-        </div>
+        </div> */}
 
         <div className='relative my-6 sm:my-8 md:my-10'>
           <button

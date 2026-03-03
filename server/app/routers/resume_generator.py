@@ -14,10 +14,6 @@ from crud.user import UserCRUD, get_user_details_from_header
 from crud.profile import store_or_update_profile,update_profile_image
 from crud.resumes import update_generated_data,update_resume_image
 
-# Utility imports
-from dependencies.enforce_limits import feature_limit
-from dependencies.feature_usage_processor import track_feature_usage, track_tokens
-
 from utils.gpt import gpt_resume_generator
 from utils.resume_scraper import (
     construct_resume_details, 
@@ -36,7 +32,7 @@ DEFAULT_MODEL = os.getenv("DEFAULT_AI_MODEL")
 router = APIRouter()
 
 class JobDetailsInput(BaseModel):
-    job_details: Dict[str,any]
+    job_details: Dict[str,Any]
     resume_details: Dict[str, Any]
     prompt: str
 
@@ -47,9 +43,6 @@ async def get_user_id(email:str):
     return user_details.id
 
 @router.post("/generate_resume")
-@feature_limit(["ai_resume_generator"])
-@track_feature_usage(["ai_resume_generator"])
-@track_tokens("ai_resume_generator")
 async def generate_resume(request: Request,resume_job_details: Dict[str, Any], model: str = DEFAULT_MODEL):
     """Generates a resume using the specified model (Gemini or DeepSeek)."""
     try:
@@ -94,9 +87,6 @@ async def generate_resume(request: Request,resume_job_details: Dict[str, Any], m
 
 
 @router.post("/extract_resume")
-@feature_limit(["upload_resume"])
-@track_feature_usage(["upload_resume"])
-@track_tokens("upload_resume")
 async def extract_resume_details(request:Request,file: UploadFile = File(...), model: str = DEFAULT_MODEL,email: str = Header(None)):
     """Extracts details from an uploaded resume file."""
     try:

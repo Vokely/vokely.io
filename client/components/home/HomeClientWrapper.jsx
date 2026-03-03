@@ -9,7 +9,6 @@ import Hero from '@/components/home/Hero';
 import TrustedBy from '@/components/home/TrustedBy';
 import HowItWorks from '@/components/home/HowItWorks';
 import LovedAndTrusted from '@/components/home/LovedAndTrusted';
-import PricingSection from '@/components/home/PricingSection';
 import FAQ from '@/components/home/FAQ';
 import AIServices from '@/components/home/AIServices';
 
@@ -40,7 +39,6 @@ export default function HomeClientWrapper() {
           <HowItWorks />
           <AIServices/>
           <LovedAndTrusted />
-          <PricingSection />
           <FAQ />
           {/* <FinalCTA /> */}
           <Footer />

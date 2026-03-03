@@ -6,7 +6,6 @@ from crud.user import UserCRUD, get_user_details_from_header
 
 from db.config import get_database
 from utils.redis.redis_keys import RedisKeys
-from constants.credit_constants import USER_LIMIT
 
 router = APIRouter()
 

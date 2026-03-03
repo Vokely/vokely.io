@@ -13,9 +13,7 @@ from utils.resume_scraper import construct_resume_details
 from utils.resume.ats import get_basic_analysis, merge_gpt_solutions, check_resume_essentials, add_scoring_to_analysis, calculate_ats_scores
 from utils.gpt import get_ats_recommendations, gpt_ats_checker
 from utils.logger import logger
-#dependencies
-from dependencies.enforce_limits import feature_limit
-from dependencies.feature_usage_processor import track_feature_usage, track_tokens
+
 # db
 from db.config import get_database
 
@@ -442,9 +440,6 @@ dummy_response = {
 }
 
 @router.post("/")
-@feature_limit(["ats_checker"])
-@track_feature_usage(["ats_checker"])
-@track_tokens("ats_checker")
 async def check_resume(request: Request, file:UploadFile = File(...), user_details:Dict[str,Any] = Depends(get_user_details_from_header)):
     try:
         user_details = await get_user_details_from_header(request)
@@ -490,9 +485,6 @@ async def check_resume(request: Request, file:UploadFile = File(...), user_detai
         raise HTTPException(status_code=500, detail="Error occured while checking resume details")
 
 @router.post("/analyze-jd")
-@feature_limit(["ats_checker","jd_ats_checker"])
-@track_feature_usage(["ats_checker","jd_ats_checker"])
-@track_tokens("ats_checker")
 async def analyze_jd(request:Request, job_details:Dict[str,Any], user_details:Dict[str,Any] = Depends(get_user_details_from_header),ats_crud:ATSCRUD = Depends(get_ATS_crud)):
     try:
         job_description = job_details.get("job_description")

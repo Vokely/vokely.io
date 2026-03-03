@@ -51,8 +51,6 @@ class UserInDB(UserBase):
 
     model_config = ConfigDict(from_attributes=True, exclude={"hashed_password"})
 
-from models.user_plan import UserPlanResponse
-
 class UserResponse(BaseModel):
     id: str
     name: str
@@ -62,11 +60,7 @@ class UserResponse(BaseModel):
     is_verified: Optional[bool] = False
     verified_at: Optional[datetime] = None
     onboarding_details: OnBoardingResponse
-    plan_details: Optional[UserPlanResponse] = None
     completed_tours: Optional[List[str]] = []
     status: Literal["existing", "new"]
 
     model_config = ConfigDict(from_attributes=True)
-
-class UserResponseFromDB(UserResponse):
-    geo_location_details: Optional[GeoLocationDetails] = None

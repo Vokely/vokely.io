@@ -2,19 +2,13 @@ from fastapi import APIRouter, Depends, Response, Request, HTTPException, Header
 from fastapi.responses import JSONResponse
 from typing import Dict, Any, List
 
-from models.user import UserBase, UserResponse, OnBoardingResponse, UserResponseFromDB
+from models.user import UserBase, UserResponse, OnBoardingResponse
 from models.auth import UserEmailRequest, SignInRequest, OAuthTokenRequest
-from models.user_plan import UserPlanCreate,UserPlanResponse, FeatureUsage
-from models.pricing_plans import PlanResponse
 
 from crud.user import UserCRUD, signUpUser, signIn, find_or_create_user
-from crud.user_mail_verify import VerificationCRUD
-from crud.user_plan import UserPlanCRUD
-from crud.pricing_plans import PricingPlanCRUD
 
 from db.config import get_database
 from dependencies.auth import get_current_user_from_access_token
-from constants.credit_constants import USER_LIMIT
 from services.session_service import SessionService
 
 from utils.auth.jwt import create_access_token, set_auth_cookies,create_oauth_callback_token
@@ -23,14 +17,6 @@ from utils.auth.csrf import set_csrf_cookie
 from utils.logger import logger
 
 router = APIRouter()
-
-async def get_VerifyCrud():
-    db = await get_database()
-    return VerificationCRUD(db)
-
-async def get_pricing_plans_crud():
-    db = await get_database()
-    return PricingPlanCRUD(db)
 
 async def check_existing_user(email: str) -> bool:
     db = await get_database()
@@ -48,7 +34,6 @@ async def signUp(request: Request, response:Response, user: UserBase) -> JSONRes
         )
 
     created_user = await signUpUser(request, response, user)
-    user_plan_details = await find_or_create_user_plan(created_user)
     # Get onboarding status for response
     onboarding_response = None
     if created_user.onboarding_details:
@@ -66,7 +51,6 @@ async def signUp(request: Request, response:Response, user: UserBase) -> JSONRes
         created_at=created_user.created_at,
         status="new",
         onboarding_details=onboarding_response,
-        plan_details=user_plan_details
     )
 
 
@@ -126,20 +110,9 @@ async def verify_oauth(request: Request, response:Response, userDetails: OAuthTo
             raise HTTPException(status_code=401, detail="Email mismatch in token")
 
         db = await get_database()
-        # user_crud = UserCRUD(db)
-
-        # user_count = await user_crud.count_users()
-        
-        # if user_count >= USER_LIMIT:
-        #     return JSONResponse(
-        #         status_code=403,
-        #         content={"detail": "We have reached our maximum capacity. We are trying our best to extend it. Please try again after 24 hours"}
-        #     )
 
         user_details = await find_or_create_user(request, response, userDetails)
         set_csrf_cookie(request, response)
-        user_plan_details = await find_or_create_user_plan(user_details)
-        user_details.plan_details = user_plan_details
         return user_details
     except HTTPException as http_exc:
         print(f"HTTP Exception: {http_exc.detail}")
@@ -274,87 +247,3 @@ async def logout_all_sessions_endpoint(
     except Exception as e:
         print(f"[Logout-All Error]: {e}")
         raise HTTPException(status_code=500, detail="Internal server error during logout from all sessions")
-
-
-async def get_user_plan_crud():
-    db = await get_database()
-    return UserPlanCRUD(db)
-
-async def get_pricing_plan_crud():
-    db = await get_database()
-    return PricingPlanCRUD(db)
-
-async def find_or_create_user_plan(user_details: UserResponseFromDB) -> UserPlanResponse:
-    try:
-        user_id = user_details.id
-        geo_location_details = user_details.geo_location_details
-        user_plan_crud = await get_user_plan_crud()
-        existing_user_plan = await user_plan_crud.get_user_plan(user_id)
-
-        if existing_user_plan is None:           
-            pricing_plan_crud = await get_pricing_plan_crud()
-            free_plan_details = await pricing_plan_crud.get_all_plans({"plan_type": "free"})
-            if not free_plan_details:
-                logger.error("[FIND_OR_CREATE_USER_PLAN_ERROR] No free plan available in database.")
-                raise ValueError("No free plan available in database.")
-
-            # Create usage_details from plan features
-            plan_details = free_plan_details[0]
-            plan_features = plan_details.get("features", [])
-            usage_details = []
-            
-            usage_details = create_usage_details_from_plan_features(plan_features)
-
-            user_plan_create = UserPlanCreate(
-                user_id=user_id,
-                plan_id=plan_details.get("id"),
-                geo_location_details=geo_location_details,
-                plan_details=free_plan_details[0],
-                usage_details=usage_details
-            )
-
-            created_plan = await user_plan_crud.create_user_plan(user_plan_create)
-            plan_response = get_plan_response(created_plan.get("plan_details"))
-            return UserPlanResponse(
-                **plan_response.dict(),
-                start_date=created_plan.get("start_date"),
-                expiry_date=created_plan.get("expiry_date")
-            )
-        else:
-            pricing_plan_crud = await get_pricing_plans_crud()
-            plan_details = await pricing_plan_crud.get_plan(existing_user_plan.get("plan_id"))
-            plan_response = get_plan_response(plan_details)
-            return UserPlanResponse(
-                **plan_response.dict(),
-                start_date=existing_user_plan.get("start_date"),
-                expiry_date=existing_user_plan.get("expiry_date")
-            )
-
-    except Exception as e:
-        logger.error(f"[FIND_OR_CREATE_USER_PLAN_ERROR] {e}")
-        return JSONResponse(
-            status_code=500,
-            content={"detail": "Error while retrieving or creating user plan"}
-        )
-
-def create_usage_details_from_plan_features(plan_features: List[Dict]) -> List[FeatureUsage]:
-    """
-    Create usage_details list from pricing plan features
-    """
-    usage_details = []
-    for feature in plan_features:
-        feature_usage = FeatureUsage(
-            name=feature.get("name"),
-            daily_usage=0,
-            total_usage=0
-        )
-        usage_details.append(feature_usage.dict())
-    logger.info(usage_details)
-    return usage_details
-
-def get_plan_response(plan_details: Dict[str,Any]) -> PlanResponse:
-    return PlanResponse(
-        name = plan_details.get("name"),
-        duration = plan_details.get("duration"),
-        plan_type = plan_details.get("plan_type")
-    )

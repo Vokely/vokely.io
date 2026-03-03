@@ -5,7 +5,6 @@ from datetime import datetime
 from utils.auth.jwt import decode_access_token, create_access_token, set_auth_cookies, decode_refresh_token
 from utils.logger import logger
 from services.session_service import SessionService
-from dependencies.user_plan import get_active_user_plan
 
 # HTTPBearer security scheme with auto_error=False for manual handling
 security = HTTPBearer(auto_error=False)
@@ -93,9 +92,6 @@ async def verify_token(request: Request) -> dict:
         request.state.user_id = user_id
         request.state.session_id = session_id
         request.state.token_payload = payload
-
-        #Set active user plan details
-        await get_active_user_plan(request)
         
         return payload
 
@@ -112,13 +108,7 @@ async def verify_admin_access(request: Request) -> dict:
     payload = await verify_token(request)
     email = payload.get("sub")
 
-    admin_users = {
-        'ak05032k2@gmail.com',
-        'arungenresume@gmail.com', 
-        'hariraghav505@gmail.com',
-        'rishikeshnextnext@gmail.com',
-        'genresume.ai@gmail.com'
-    }
+    admin_users = {}
 
     if email not in admin_users:
         raise HTTPException(

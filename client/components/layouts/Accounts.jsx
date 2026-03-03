@@ -164,104 +164,10 @@ export default function AccountDetails({ user, onClose, handleLogout }) {
                 </div>
               </div>
 
-              {/* Subscription / Pro features */}
-              <div className="space-y-4 rounded-2xl border border-cyan-500/30 bg-gradient-to-br from-cyan-500/10 via-slate-900/60 to-slate-950/80 p-5 sm:p-6">
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                  <div className="min-w-0">
-                    <p className="text-sm sm:text-base font-semibold text-slate-50">
-                      Thanks for subscribing to {planNameRaw}!
-                    </p>
-                    <p className="mt-1.5 text-xs sm:text-sm text-slate-200 leading-relaxed">
-                      Unlock AI interviews, learning roadmaps, resumes, and deep
-                      career insights tailored to your target roles.
-                    </p>
-                  </div>
-                  <a href="/#pricing" className="mt-1 sm:mt-0 flex-shrink-0">
-                    <button className="inline-flex items-center gap-1.5 rounded-full bg-cyan-500 px-4 py-2.5 text-sm font-semibold text-slate-900 shadow-sm hover:bg-cyan-400">
-                      <ArrowUpRight className="w-4 h-4" />
-                      <span className="whitespace-nowrap">Manage / upgrade plan</span>
-                    </button>
-                  </a>
-                </div>
-
-                {user?.plan_details && (
-                  <div className="grid gap-3 sm:gap-4 text-xs sm:text-sm text-slate-200 sm:grid-cols-2">
-                    <div className="flex flex-col gap-0.5">
-                      <span className="text-[11px] uppercase tracking-wide text-slate-400">
-                        Plan
-                      </span>
-                      <span className="font-medium text-slate-50 break-all">
-                        {user.plan_details.name}
-                      </span>
-                    </div>
-                    <div className="flex flex-col gap-0.5">
-                      <span className="text-[11px] uppercase tracking-wide text-slate-400">
-                        Expiry
-                      </span>
-                      <span className="font-medium text-slate-50">
-                        {planExpiry}
-                      </span>
-                    </div>
-                  </div>
-                )}
-
-                {/* Example feature: Pro Discord */}
-                <div className="mt-3 flex flex-col gap-3 rounded-xl border border-white/10 bg-black/30 p-3.5 sm:p-4 sm:flex-row sm:items-center sm:justify-between">
-                  <div className="min-w-0">
-                    <p className="text-sm font-semibold text-slate-50">
-                      Pro Discord
-                    </p>
-                    <p className="mt-1 text-xs sm:text-sm text-slate-200 leading-relaxed">
-                      Get feedback, interview tips, and roadmap ideas from other
-                      members in the community.
-                    </p>
-                  </div>
-                  <a
-                    href="https://discord.gg/FbVWkM6Y"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full sm:w-auto"
-                  >
-                    <button className="flex w-full items-center justify-center gap-2 rounded-full bg-white/10 px-4 py-2.5 text-sm font-medium text-slate-100 hover:bg-white/15">
-                      <MessageCircle className="w-4 h-4" />
-                      <span>Go to Discord</span>
-                    </button>
-                  </a>
-                </div>
-              </div>
             </div>
 
             {/* Right: Support & security */}
             <div className="space-y-5">
-              {/* Support */}
-              <div className="rounded-2xl border border-white/10 bg-white/5 p-5 sm:p-6">
-                <p className="text-sm sm:text-base font-semibold text-slate-50">
-                  Support
-                </p>
-                <p className="mt-1.5 text-xs sm:text-sm text-slate-200 leading-relaxed">
-                  Need help with your account, billing, or interview tools?
-                  Reach out to our support team any time.
-                </p>
-                <p className="mt-2 text-xs sm:text-sm text-slate-200">
-                  Email:{" "}
-                  <span className="font-medium">support@vokely.io</span>
-                </p>
-
-                {/* Contact support */}
-                <button className="mt-3 inline-flex w-full items-center justify-center rounded-full bg-white/10 px-4 py-2.5 text-sm font-medium text-slate-100 hover:bg-white/15">
-                  Contact support
-                </button>
-
-                {/* Feature requests / feedback */}
-                <a
-                  href="https://vokely.featurebase.app"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-2 inline-flex w-full items-center justify-center rounded-full bg-indigo-500/20 px-4 py-2.5 text-sm font-medium text-indigo-200 hover:bg-indigo-500/30 transition"
-                >
-                  Feature requests & feedback
-                </a>
-              </div>
 
               {/* Security / logout */}
               <div className="space-y-4 rounded-2xl border border-red-500/30 bg-gradient-to-br from-red-500/12 via-slate-900/70 to-slate-950/85 p-5 sm:p-6">

@@ -17,15 +17,9 @@ from utils.interactive_interviewer import InteractiveInterviewer
 from utils.redis.redis_keys import RedisKeys
 from utils.json.json_encoder import EnhancedJSONEncoder
 
-# Utility imports
-from dependencies.enforce_limits import feature_limit
-from dependencies.feature_usage_processor import track_feature_usage, track_tokens
-
 # models
 from models.interview import InterviewDetailsResponse, AllInterviewsResponse
 from models.resume import ModuleName
-# constants
-from constants.credit_constants import INTERVIEW_DEDUCTION_AMOUNT
 
 # crud
 from crud.user import get_user_details_from_header,UserCRUD
@@ -134,9 +128,6 @@ async def get_all_interviews(
 
 
 @router.post("/upload_resume")
-@feature_limit(["upload_resume"])
-@track_feature_usage(["upload_resume"])
-@track_tokens("upload_resume")
 async def upload_resume(request: Request,file: UploadFile = File(...)):
     """validates uploaded file type, generate session id, creates a new object and adds the resume data to it.
 
@@ -179,7 +170,6 @@ async def upload_resume(request: Request,file: UploadFile = File(...)):
         raise HTTPException(status_code=500, detail=f"Error extracting resume details: {str(e)}")
 
 @router.post("/get_session_id")
-@feature_limit(["ai_interviewer"])
 async def get_session_id(request: Request,json_body:Dict[str,Any]):
     try:
         header_details = await get_user_details_from_header(request)
@@ -212,8 +202,6 @@ async def delete_interview(interview_id: str, interview_crud: InterviewCRUD = De
         raise HTTPException(status_code=500, detail=f"Error deleting interview: {str(e)}")
 
 @router.post("/start_interview")
-@feature_limit(["ai_interviewer"])
-@track_feature_usage(["ai_interviewer"])
 async def start_interview(request:Request,jd_details:Dict[str,Any]):
     """Validates session ID, Starts interview with a question
     Args:
@@ -280,7 +268,6 @@ async def next_question(jd_details:Dict[str,Any]):
 
 
 @router.post("/end_interview")
-@track_tokens("ai_interviewer")
 async def end_interview(request:Request,json:Dict[str,Any]):
     """Validates the session ID and pops it from the local dictionary, returns chat history with performance rating,feedback and conclusion.
 

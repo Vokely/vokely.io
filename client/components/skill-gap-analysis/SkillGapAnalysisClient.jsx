@@ -9,7 +9,6 @@ import useToastStore from '@/store/toastStore';
 import { useRouter } from 'next/navigation';
 import useSkillGapStore from '@/store/skillGapStore';
 import NewSideBar from '../layouts/NewSideBar';
-import PremiumOverlay from '../reusables/PremiumOverlay';
 
 export default function SkillGapAnalysisClient() {
   const router = useRouter()
@@ -89,7 +88,6 @@ export default function SkillGapAnalysisClient() {
               <h1 className='text-primary text-center text-xl xxs:text-2xl md:text-3xl mb-1 xxs:mb-2 font-semibold'>Let's get you prepared for your Dream Job</h1>
               <p className='text-center text-sm xxs:text-base tracking-wide max-w-3xl'>We'll personalize the report based on your resume and the role you're aiming for. It only takes a minute!</p>
               
-              <PremiumOverlay featureName="skill_gap_analysis">
                   <div className='border-[1px] border-[#bababa] rounded-xl w-full md:max-w-[50vw] p-4 space-y-4 h-fit mt-5'>
                   <h2 className='text-xl font-semibold'>1.&nbsp;Select Your Resume</h2>
                   <ResumesDropdownItems
@@ -106,7 +104,6 @@ export default function SkillGapAnalysisClient() {
                   placeholder='Paste your Job Description or preferred Job Title' onChange={(e)=>setJobDescription(e.target.value)} value={jobDescription}
                   />                
                 </div>
-              </PremiumOverlay>
               <button className='border-[1px] mt-5 bg-primary text-white rounded-full px-6 py-1.5 transition-colors duration-200' onClick={handleAnalyze}>
                 {loading ? 'Analyzing':'Analyze'}
               </button>

@@ -1,5 +1,4 @@
 import "@/styles/editor.css";
-import PremiumOverlay from "../reusables/PremiumOverlay";
 
 export default function JD({ jobDescription, setJobDescription }) {
   return (
@@ -8,7 +7,6 @@ export default function JD({ jobDescription, setJobDescription }) {
         Paste JD and get your Resume tailored for it
       </h1>
 
-      <PremiumOverlay featureName="ai_resume_generator">
         <textarea
           name="jd"
           id="jd"
@@ -18,7 +16,6 @@ export default function JD({ jobDescription, setJobDescription }) {
           value={jobDescription}
           onChange={(e) => setJobDescription(e.target.value)}
           />
-      </PremiumOverlay>
     </div>
   );
 }

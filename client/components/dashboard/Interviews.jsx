@@ -6,7 +6,6 @@ import History from './History';
 import useToastStore from '@/store/toastStore';
 import { deleteInterviewFromDB } from '@/lib/interviewUtil';
 import InterviewSummary from '@/components/interviewer/InterviewSummary';
-import PremiumOverlay from '../reusables/PremiumOverlay';
 
 const Interviews = ({ interviews = [], loading, fetchInterviews, user_details }) => {
   const name = `${user_details?.personalInfo?.firstName || ""} ${user_details?.personalInfo?.lastName || ""}`.trim();
@@ -234,7 +233,6 @@ const Interviews = ({ interviews = [], loading, fetchInterviews, user_details })
         </div>
       )}
       
-      <PremiumOverlay featureName="ai_interviewer">
         {loading ? (
           <div className="flex justify-center items-center py-6">
             <p className="text-primary text-sm">Loading interviews...</p>
@@ -344,7 +342,6 @@ const Interviews = ({ interviews = [], loading, fetchInterviews, user_details })
             </div>
           </>
         )}
-      </PremiumOverlay>
     </div>
   );
 };

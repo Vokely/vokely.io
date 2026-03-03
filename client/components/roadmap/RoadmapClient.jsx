@@ -8,7 +8,6 @@ import { RoadMapLoader } from '@/components/roadmap/RoadMapLoader';
 import useRoadmapStore from '@/store/roadmapStore';
 import NewSideBar from '@/components/layouts/NewSideBar';
 import useAPIWrapper from '@/hooks/useAPIWrapper';
-import PremiumOverlay from '../reusables/PremiumOverlay';
 
 export default function SkillGapAnalyzer() {
   const {targetSkill, setTargetSkill} = useRoadmapStore();
@@ -90,7 +89,6 @@ export default function SkillGapAnalyzer() {
             </div>
 
             {/* Form */}
-            <PremiumOverlay featureName="ai_roadmaps">
               <div className="mt-8 space-y-6">
                 <div>
                   <label htmlFor="skill" className="block text-sm font-medium text-gray-700">
@@ -215,7 +213,6 @@ export default function SkillGapAnalyzer() {
                   </p>
                 </div>
               </div>
-            </PremiumOverlay>
           </div>
         </div>
       </main>

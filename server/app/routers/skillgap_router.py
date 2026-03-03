@@ -18,9 +18,6 @@ from utils.gpt import generate_skill_gap_report
 from utils.gpt import generate_roadmap_topics_from_skillgap
 from db.config import get_database  
 
-from dependencies.enforce_limits import feature_limit
-from dependencies.feature_usage_processor import track_feature_usage, track_tokens
-
 router = APIRouter()
 
 class CreateRequest(BaseModel):
@@ -44,9 +41,6 @@ async def get_roadmap_crud():
     return RoadmapCRUD(db)
 
 @router.post("/", response_model=dict)
-@feature_limit(["skill_gap_analysis"])
-@track_feature_usage(["skill_gap_analysis"])
-@track_tokens("skill_gap_analysis")
 async def create_skill_gap_report(
     request:Request,
     request_details: CreateRequest, 
@@ -89,9 +83,6 @@ async def create_skill_gap_report(
         )
 
 @router.post("/generate-roadmap")
-@feature_limit(["ai_roadmaps"])
-@track_feature_usage(["ai_roadmaps"])
-@track_tokens("ai_roadmaps")
 async def get_roadmap(request:Request,details: RoadmapCreate,roadmap_crud: RoadmapCRUD = Depends(get_roadmap_crud)):
     try:
         if len(details.skills) > 5:

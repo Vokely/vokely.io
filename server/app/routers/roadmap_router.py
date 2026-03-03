@@ -12,10 +12,7 @@ from utils.groq import get_summaries_of_sub_headings
 from utils.perplexity import get_perplexity_links
 from utils.redis.redis_keys import RedisKeys
 from utils.json.json_encoder import EnhancedJSONEncoder
-from constants.credit_constants import ROADMAP_DEDUCTION_AMOUNT
 
-from dependencies.enforce_limits import feature_limit
-from dependencies.feature_usage_processor import track_feature_usage, track_tokens, track_tokens
 #models
 from models.roadmap import  LearningStatus
 
@@ -176,9 +173,6 @@ async def get_roadmap_by_id(request:Request,roadmap_id: str,roadmap_crud: Roadma
         raise HTTPException(status_code=500, detail="Error fetching roadmap")
 
 @router.post("/generate")
-@feature_limit(["ai_roadmaps"])
-@track_feature_usage(["ai_roadmaps"])
-@track_tokens("ai_roadmaps")
 async def get_roadmap(request:Request,details: RoadMapRequest,roadmap_crud: RoadmapCRUD = Depends(get_roadmap_crud)):
     try:
         user_details = await get_user_details_from_header(request)

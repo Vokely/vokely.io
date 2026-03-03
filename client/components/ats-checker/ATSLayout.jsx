@@ -9,22 +9,16 @@ import { useATSStore } from '@/store/atsStore';
 import { useAuthStore } from '@/store/authStore';
 import SignInPopup from '../reusables/SignInPopUp';
 import NewSideBar from '../layouts/NewSideBar';
-import PremiumOverlay from '../reusables/PremiumOverlay';
 import useIsMobile from '@/hooks/IsMobile';
-import { ChevronsUpDown } from 'lucide-react';
-import { AnimatePresence,motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 
 const ATSLayout = () => {
   const router = useRouter();
   const {user} = useAuthStore();
-  const isMobile = useIsMobile();
   const [selectedFile,setSelectedFile] = useState(null)
   const addToast = useToastStore((state) => state.addToast);
   const [isResumeUploaded,setIsResumeUploaded] = useState(false);
   const [isSignInOpen, setIsSignInOpen] = useState(false);
-  const [iSideBarOpen,setIsSideBarOpen] = useState(true);
-  const {setEssentials,setGrammarErrors,setScore,setResumeId,setReportId} = useATSStore()
 
   const handleSignInSuccess = () => {
     setIsSignInOpen(false);
@@ -84,7 +78,6 @@ const ATSLayout = () => {
           <div className='text-center'>
             <h1 className='text-primary text-3xl font-medium'>Get your Resume ready for any JD</h1>
             <p className='mb-10 mt-5 text-[#333747]'>Let's see how well it performs against ATS and get instant feedback.</p>
-          <PremiumOverlay featureName="ats_checker" className="h-full w-full">
             <div className='mx-auto h-[50vh] w-[80%] md:h-[40vh] md:w-[30vw]'>
                 <NewUpload
                   selectedFile={selectedFile}
@@ -94,7 +87,6 @@ const ATSLayout = () => {
                   handleATSUpload={handleATSUpload}
                 />
             </div>              
-          </PremiumOverlay>
           </div>
       </div>
     )}

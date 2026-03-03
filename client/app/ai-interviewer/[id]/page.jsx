@@ -1,8 +1,9 @@
 'use client';
 import { useEffect, useState, useRef } from 'react';
-import { useSearchParams } from 'next/navigation';
 import useInterviewStore from '@/store/interviewStore';
 import {
+  speechToText,
+  tts,
   getNextQuestion,
   endInterview,
 } from '@/lib/interviewUtil';
@@ -21,53 +22,11 @@ import Spinner from '@/components/reusables/Spinner';
 import useUserDetailsStore from '@/store/userDetails';
 import { getProfileDetails } from '@/lib/fetchUtil';
 import { getInterviewDetails } from '@/lib/interviewUtil';
-import LiveKitInterviewPage from '@/components/interviewer/LiveKitInterviewPage';
-import { useLiveKitInterview } from '@/hooks/useLiveKitInterview'; // Adjust path as needed
+
 
 export default function Page({params}) {
-  const searchParams = useSearchParams();
-  const isVoiceInterview = searchParams.get('voice') === 'true';
+  const { history, addHistory,setHistory, title, setTitle, suggestion, setSuggestion, interviewEnded, setInterviewEnded,conclusion, setConclusion, jobDescription, setJobDescription, setInterviewStartTime} = useInterviewStore();
   const session_id = params.id;
-
-  // If this is a voice interview, render the LiveKit component
-  if (isVoiceInterview) {
-    return <LiveKitInterviewPage sessionId={session_id} />;
-  }
-
-  // LiveKit Integration
-  const {
-    room,
-    isConnected,
-    isConnecting,
-    connectionError,
-    isMicEnabled,
-    isAgentSpeaking,
-    sessionData,
-    startInterview,
-    endInterview: endLiveKitInterview,
-    toggleMicrophone,
-    requestMicrophonePermission,
-  } = useLiveKitInterview();
-
-  // Store states
-  const { 
-    history, 
-    addHistory,
-    setHistory, 
-    title, 
-    setTitle, 
-    suggestion, 
-    setSuggestion, 
-    interviewEnded, 
-    setInterviewEnded,
-    conclusion, 
-    setConclusion, 
-    jobDescription, 
-    setJobDescription, 
-    setInterviewStartTime
-  } = useInterviewStore();
-
-  // UI States - mapped to LiveKit equivalents
   const [isAudioPlaying, setIsAudioPlaying] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [userResponse, setUserResponse] = useState('');
@@ -82,53 +41,29 @@ export default function Page({params}) {
   const [isBreakPoint, setIsBreakPoint] = useState(null);
   const [buttonPosition, setButtonPosition] = useState({ x: 20, y: 20 });
   const [isDragging, setIsDragging] = useState(false);
-  const [showChatWindow, setShowChatWindow] = useState(false);
+  const [showChatWindow,setShowChatWindow] = useState(false)
   const chatwindowRef = useRef(null);
   const [generatingFeedback, setGeneratingFeedback] = useState(false);
-  const [livekitInitialized, setLivekitInitialized] = useState(false);
 
   const {
     user_details: {
       personalInfo
-    },
-    setUserDetails,
-    resetAllState,
-    setHasUntrackedChanges
+    },setUserDetails,resetAllState,setHasUntrackedChanges
   } = useUserDetailsStore();
   const candidateName = personalInfo.firstName + " " + personalInfo.lastName;
-
-  // Sync LiveKit states with UI states
-  useEffect(() => {
-    setIsAudioPlaying(isAgentSpeaking);
-  }, [isAgentSpeaking]);
-
-  useEffect(() => {
-    setIsMicOn(isMicEnabled);
-  }, [isMicEnabled]);
-
-  useEffect(() => {
-    // When agent stops speaking, it's user's turn
-    if (!isAgentSpeaking && isConnected) {
-      setIsUserTurn(true);
-      setShowPopUp(true);
-    } else if (isAgentSpeaking) {
-      setIsUserTurn(false);
-      setShowPopUp(false);
-    }
-  }, [isAgentSpeaking, isConnected]);
 
   const fetchData = async() => {
     const response = await getProfileDetails();
     if(response?.profile_details != null) {
       setUserDetails(response?.profile_details?.resume_data);
-    } else {
+    }else{
       resetAllState();
     }
-    setHasUntrackedChanges(false);
-  };
-
+    setHasUntrackedChanges(false)
+  }
   useEffect(() => {
     const storedData = localStorage.getItem("user-details-storage");
+
     if(!storedData){
       fetchData();
     }
@@ -181,6 +116,9 @@ export default function Page({params}) {
   }, []);
 
   const chatRef = useRef(null);
+  const mediaRecorderRef = useRef(null);
+  const audioChunksRef = useRef([]);
+  const audioRef = useRef(null);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -189,77 +127,138 @@ export default function Page({params}) {
       }
     };
 
+    // Add event listener when the dropdown is open
     if (showChatWindow) {
       document.addEventListener("mousedown", handleClickOutside);
     }
 
+    // Cleanup the event listener
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [showChatWindow]);
 
-  // LiveKit Integration Functions
-  const startLiveKitRecording = async () => {
+  const startRecording = async () => {
     try {
-      if (!isConnected && !isConnecting) {
-        // Request microphone permission first
-        const hasPermission = await requestMicrophonePermission();
-        if (!hasPermission) {
-          return;
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = mediaRecorder;
+      audioChunksRef.current = [];
+
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data);
         }
+      };
 
-        // Start LiveKit interview session
-        await startInterview(session_id, jobDescription);
-        setLivekitInitialized(true);
-      }
-      
-      // Toggle microphone
-      await toggleMicrophone();
+      mediaRecorder.onstop = async () => {
+        const audioBlob = new Blob(audioChunksRef.current, {
+          type: 'audio/wav',
+        });
+        sendAudioToAPI(audioBlob);
+      };
+
+      mediaRecorder.start();
     } catch (error) {
-      console.error('Error starting LiveKit recording:', error);
+      console.error('Error accessing microphone:', error);
     }
   };
 
-  const stopLiveKitRecording = async () => {
-    try {
-      if (isMicEnabled) {
-        await toggleMicrophone();
-      }
-    } catch (error) {
-      console.error('Error stopping LiveKit recording:', error);
+  const stopRecording = () => {
+    if (mediaRecorderRef.current) {
+      mediaRecorderRef.current.stop();
     }
   };
-
-  // Modified handlers to work with LiveKit
   const handleSendResponse = async () => {
     if (!userResponse.trim() || isAudioPlaying) return;
     setIsGenerating(true);
     setShowSuggestions(false);
     setIsUserTurn(false);
     addHistory({ role: 'user', content: userResponse });
-    
-    const response = await getNextQuestion(userResponse, session_id);
+    const response = await getNextQuestion(userResponse,session_id,);
     setUserResponse('');
-    
     if (response?.stage === 'finish') {
       localStorage.removeItem(`interview-end-time-${session_id}`);
-      await fetchData();
+      stopRecording()
+      await fetchData()
       setInterviewEnded(true);
       setIsGenerating(false);
       setConclusion(response.conclusion);
       if (response?.question?.conclusion && response?.question?.feedback) {
         addHistory({ role: 'AI', content: response?.question?.conclusion });
         addHistory({ role: 'AI', content: response?.question?.feedback });
+        // playAudio(response.question.conclusion, () => {
+        //   playAudio(response.question.feedback);
+        // });
       }
       return;
     }
-    
     if (response?.question) {
-      // With LiveKit, the agent will handle TTS automatically
+      await playAudio(response.question);
       addHistory({ role: 'AI', content: response.question });
       setSuggestion(response.ideal_answer);
     }
     setIsGenerating(false);
+  };
+
+  const sendAudioToAPI = async (audioBlob) => {
+    setShowSuggestions(false);
+    setIsUserTurn(false);
+    const textResponse = await speechToText(audioBlob);
+    if (textResponse) {
+      addHistory({ role: 'user', content: textResponse });
+      const response = await getNextQuestion(textResponse,session_id);
+      if (response?.stage === 'finish') {
+        localStorage.removeItem(`interview-end-time-${session_id}`);
+        stopRecording()
+        await fetchData()
+        setInterviewEnded(true);
+        setIsGenerating(false);
+        if (response?.question?.conclusion && response?.question?.feedback) {
+          setConclusion(response.conclusion);
+          addHistory({ role: 'AI', content: response?.question?.conclusion });
+          addHistory({ role: 'AI', content: response?.question?.feedback });
+          // playAudio(response.question.conclusion, () => {
+          //   playAudio(response.question.feedback);
+          // });
+        }
+        return;
+      }else if(response) {
+        await playAudio(response.question);
+        addHistory({ role: 'AI', content: response.question });
+        setSuggestion(response.ideal_answer);
+      }
+      setIsGenerating(false);
+    }
+  };
+
+  const playAudio = async (content, onEndCallback = null) => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
+    const audioBlob = await tts(content);
+    if (audioBlob) {
+      const audioUrl = URL.createObjectURL(audioBlob);
+
+      // Ensure `audioRef.current` is assigned before playing
+      if (!audioRef.current) {
+        audioRef.current = new Audio(audioUrl);
+      } else {
+        audioRef.current.src = audioUrl;
+      }
+
+      setIsAudioPlaying(true);
+
+      audioRef.current.play();
+      audioRef.current.onended = () => {
+        setIsAudioPlaying(false);
+        setShowPopUp(true);
+        setIsAudioPlaying(false);
+        setIsUserTurn(true);
+        if (onEndCallback) onEndCallback();
+      };
+    }
   };
 
   const getRemainingMessage = () => {
@@ -277,34 +276,25 @@ export default function Page({params}) {
   };
 
   const handleEndInterview = async () => {
-    setGeneratingFeedback(true);
-    
-    // Stop LiveKit recording
-    await stopLiveKitRecording();
-    
-    // End LiveKit session
-    if (sessionData?.session_id) {
-      await endLiveKitInterview();
-    }
-
-    // Clear LiveKit session data from localStorage
-    localStorage.removeItem(`livekit-token-${session_id}`);
-    localStorage.removeItem(`livekit-session-${session_id}`);
-
+    setGeneratingFeedback(true)
+    stopRecording()
+    //Handle the animated history here
     if (animatedHistory.length > 0) {
       const updatedChat = getRemainingMessage();
       setAnimatedHistory(updatedChat);
     }
-    
     setHasEndedByUser(true);
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
 
     const data = await endInterview(session_id);
-    await fetchData();
+    await fetchData()
     localStorage.removeItem(`interview-end-time-${session_id}`);
     setInterviewEnded(true);
-    setGeneratingFeedback(false);
-    setConclusion(data.conclusion);
-    
+    setGeneratingFeedback(false)
+    setConclusion(data.conclusion)
     if (data) {
       addHistory({ role: 'AI', content: data?.conclusion?.conclusion });
       addHistory({ role: 'AI', content: data?.conclusion?.feedback });
@@ -323,10 +313,14 @@ export default function Page({params}) {
           },
         ]);
       }
+      // playAudio(data.conclusion.conclusion, () => {
+      //   playAudio(data.conclusion.feedback);
+      // });
     }
   };
 
   const checkInterviewStatus = (response) => {
+    // Ensure the response contains required data
     if (!response || !response.interview || !response.interview.history) {
       console.error("Invalid response format");
       return {
@@ -336,7 +330,9 @@ export default function Page({params}) {
     }
   
     const { history } = response.interview;
+    
     const lastEntry = history[history.length - 1];
+    
     const isInterviewEnded = lastEntry.stage === "finish";
     
     let conclusion = null;
@@ -345,6 +341,7 @@ export default function Page({params}) {
     }
     
     const isUserTurn = lastEntry.role === "interviewer" && !isInterviewEnded;
+
     const createdAt = response.interview.created_at ? new Date(response.interview.created_at) : null;
     
     return {
@@ -360,118 +357,58 @@ export default function Page({params}) {
   
   const updateInterviewState = async(response) => {
     const status = checkInterviewStatus(response);
-    
+    // const {history} = response.history
     if (status.createdAt) {
       const startTimeMs = status.createdAt.getTime();
       setInterviewStartTime(startTimeMs);
       
+      // Also update localStorage if necessary
       const sessionId = response?.interview?.session_id;
       if (sessionId) {
-        const INTERVIEW_DURATION = 10 * 60 * 1000;
+        // Calculate end time based on start time + duration (10 minutes)
+        const INTERVIEW_DURATION = 10 * 60 * 1000; // 10 minutes in milliseconds
         const endTime = startTimeMs + INTERVIEW_DURATION;
         
+        // Only set if not already set
         if (!localStorage.getItem(`interview-end-time-${sessionId}`)) {
           localStorage.setItem(`interview-end-time-${sessionId}`, endTime.toString());
         }
       }
     }
-    
-    const history = response.interview.history;
+    const history = response.interview.history
     if (status.isInterviewEnded) {
+      // Interview has ended
       setInterviewEnded(true);
       setConclusion(status.conclusion);
       localStorage.removeItem(`interview-end-time-${session_id}`);
-      // Clear LiveKit session data when interview is already ended
-      localStorage.removeItem(`livekit-token-${session_id}`);
-      localStorage.removeItem(`livekit-session-${session_id}`);
     } else {
       setIsUserTurn(status.isUserTurn);
-      // With LiveKit, the agent will handle the initial audio automatically
+      if (status.lastEntryRole === 'interviewer' && history.length===1) {
+        await playAudio(status.lastEntryContent);
+      }  
     }
     
     return status;
   };
 
-  // Initialize LiveKit when component mounts
   useEffect(() => {
-    const checkExistingSession = async (interviewData) => {
-      // Check if there's an existing LiveKit session for this interview
-      const existingToken = localStorage.getItem(`livekit-token-${session_id}`);
-      const existingSessionData = localStorage.getItem(`livekit-session-${session_id}`);
-      
-      if (existingToken && existingSessionData && !interviewEnded) {
-        try {
-          console.log('Reconnecting to existing LiveKit session...');
-          const sessionData = JSON.parse(existingSessionData);
-          
-          // Try to reconnect to the existing room
-          const serverUrl = process.env.NEXT_PUBLIC_LIVEKIT_URL || 'wss://vokely-0dzq7f4x.livekit.cloud';
-          await room.connect(serverUrl, existingToken, {
-            autoSubscribe: true,
-          });
-          
-          setLivekitInitialized(true);
-          console.log('Successfully reconnected to existing LiveKit session');
-          return true;
-        } catch (error) {
-          console.log('Failed to reconnect to existing session, creating new one:', error);
-          // Clear invalid session data
-          localStorage.removeItem(`livekit-token-${session_id}`);
-          localStorage.removeItem(`livekit-session-${session_id}`);
-          return false;
-        }
-      }
-      return false;
-    };
-
-    const initializeLiveKit = async (interviewData) => {
-      if (!livekitInitialized && !isConnecting && !isConnected && !interviewEnded) {
-        try {
-          // First try to reconnect to existing session
-          const reconnected = await checkExistingSession(interviewData);
-          
-          if (!reconnected) {
-            // Create new session if reconnection failed or no existing session
-            console.log('Creating new LiveKit session...');
-            const hasPermission = await requestMicrophonePermission();
-            if (hasPermission) {
-              const response = await startInterview(session_id, interviewData.resume?.job_description || jobDescription);
-              
-              // Store session data for reconnection
-              if (response && response.token) {
-                localStorage.setItem(`livekit-token-${session_id}`, response.token);
-                localStorage.setItem(`livekit-session-${session_id}`, JSON.stringify(response));
-              }
-              
-              setLivekitInitialized(true);
-              console.log('Successfully created new LiveKit session');
-            }
-          }
-        } catch (error) {
-          console.error('Error initializing LiveKit:', error);
-        }
-      }
-    };
-
-    const fetchInterviewData = async() => {
+    // const isReload = performance.getEntriesByType("navigation")[0]?.type === "reload";
+    // const isNavigate = performance.getEntriesByType("navigation")[0]?.type === "navigate";
+    const fetchData = async() => {
       const data = await getInterviewDetails(session_id);
       if(data){
         setHistory(data.interview.history);
         setAnimatedHistory(data.interview.history);
-        setJobDescription(data.resume.job_description);
+        setJobDescription(data.resume.job_description)
         setTitle(data.interview.title);
         const ideal_answers = data.interview.ideal_answers;
         if(ideal_answers!==null && ideal_answers.length>0){
           setSuggestion(ideal_answers[ideal_answers.length-1]);
         }
         await updateInterviewState(data);
-        
-        // Initialize LiveKit after getting interview data
-        await initializeLiveKit(data);
       }
-    };
-
-    fetchInterviewData();
+    }
+    fetchData();
   }, []);
 
   useEffect(() => {
@@ -488,37 +425,19 @@ export default function Page({params}) {
     return () => window.removeEventListener('resize', checkWidth);
   }, []);
 
-  // Show connection error if LiveKit fails
-  if (connectionError) {
-    return (
-      <div className='grid place-items-center h-screen w-screen'>
-        <div className='flex flex-col items-center justify-center gap-5'>
-          <h1 className='text-2xl font-semibold text-red-600 text-center'>Connection Error</h1>
-          <p className='text-center'>{connectionError}</p>
-          <button 
-            onClick={() => window.location.reload()} 
-            className='px-4 py-2 bg-blue-500 text-white rounded-md'
-          >
-            Retry
-          </button>
-        </div>
-      </div>
-    );
-  }
 
   if(interviewEnded){
     return (
       generatingFeedback ? (
       <div className='grid place-items-center h-screen w-screen'>
         <div className='flex flex-col items-center justify-center gap-5'>
-          <h1 className='text-2xl font-semibold text-primary text-center'>Geneva is analysing your performance and<br />generating your personalized feedback</h1>
+          <h1 className='text-2xl font-semibold text-primary text-center'>Geneva is anlysing your performance and<br />generating your personalized feedback</h1>
           <Spinner />
         </div>
       </div>  
     ) : <div className='h-screen w-screen'><InterviewSummary conclusion={conclusion} interview_id={session_id} candidateName={candidateName} jobDescription={jobDescription} /></div>
     )
   }
-
   return isBreakPoint ? (
     <div>
       <div className="flex flex-col items-center gap-1 justify-between px-2 py-2 md:col-span-2">
@@ -537,12 +456,16 @@ export default function Page({params}) {
       </div>
         
       <div className="flex h-[75vh] w-[90vw] flex-col gap-2 m-auto">
+        {' '}
+        {/* Container with full height minus header */}
         <div className="flex-1 overflow-auto">
+          {' '}
+          {/* Video takes 50% */}
           <VideoCall
             isUserTurn={isUserTurn}
-            sendAudioToAPI={() => {}} // LiveKit handles audio automatically
-            startRecording={startLiveKitRecording}
-            stopRecording={stopLiveKitRecording}
+            sendAudioToAPI={sendAudioToAPI}
+            startRecording={startRecording}
+            stopRecording={stopRecording}
             handleEndInterview={handleEndInterview}
             showPopUp={showPopUp}
             setShowPopUp={setShowPopUp}
@@ -575,7 +498,7 @@ export default function Page({params}) {
               </div>
             </div>
             )}
-            {!interviewEnded && (
+            {! interviewEnded && (
               <div
                 className="fixed z-50"
                 style={{
@@ -626,6 +549,9 @@ export default function Page({params}) {
     >
       {/* Left */}
       <div className="flex items-center gap-10 px-2 py-4">
+        {/* <div>
+                    <ChevronLeft size={22} />
+                </div> */}
         <div>
           <h1 className="font-medium">{title} - Interview</h1>
           <p>A comprehensive {title} role</p>
@@ -646,9 +572,9 @@ export default function Page({params}) {
         <div className="h-[75%] w-[100%] rounded-md p-2">
           <VideoCall
             isUserTurn={isUserTurn}
-            sendAudioToAPI={() => {}} // LiveKit handles audio automatically
-            startRecording={startLiveKitRecording}
-            stopRecording={stopLiveKitRecording}
+            sendAudioToAPI={sendAudioToAPI}
+            startRecording={startRecording}
+            stopRecording={stopRecording}
             handleEndInterview={handleEndInterview}
             showPopUp={showPopUp}
             setShowPopUp={setShowPopUp}

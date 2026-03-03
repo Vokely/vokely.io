@@ -15,11 +15,9 @@ from utils.auth.jwt import create_access_token, set_auth_cookies
 from utils.json.serialize_json import serialize_mongo_document
 from utils.logger import logger
 
-from models.user import UserBase, UserInDB, UserResponse, UserResponseFromDB, OnBoardingDetails,OnBoardingRequest, OnBoardingResponse, GeoLocationDetails
+from models.user import UserBase, UserInDB, UserResponse, UserResponse, OnBoardingDetails,OnBoardingRequest, OnBoardingResponse, GeoLocationDetails
 
 from crud.profile import get_profile_details
-
-from routers.public_router import get_user_location
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -306,35 +304,7 @@ class UserCRUD:
         
         return result.modified_count > 0
 
-    async def add_geo_location_details(self,user_id: str, location_details: GeoLocationDetails) -> UserInDB:
-        """
-        Updates the geo_location_details field for the user with the given user_id.
-        """
-        result = await self.collection.update_one(
-            {"_id": ObjectId(user_id)},
-            {"$set": {"geo_location_details": location_details.dict()}}
-        )
-        return await self.find_user_by_id(user_id)
-
-async def get_user_loc_details(user_id:str,request:Request):
-        try:
-            location_details = await get_user_location(request)
-            if location_details is None:
-                logger.error("Location  details not found for user : {user_id}")
-                return
-            if isinstance(location_details, JSONResponse):
-                location_details = json.loads(location_details.body.decode())
-
-            return GeoLocationDetails(
-                country_code = location_details.get("country_code"),
-                country_name = location_details.get("country_name"),
-                currency_code = location_details.get("currency_code"),
-                currency_symbol=location_details.get("currency_symbol"),
-            )
-        except Exception as e:
-            logger.error(f"An error occcured while udpating user location : {e}")
-
-async def find_or_create_user(request: Request,response: Response, user: UserBase) -> UserResponseFromDB:
+async def find_or_create_user(request: Request,response: Response, user: UserBase) -> UserResponse:
     db = await get_database()
     user_crud = UserCRUD(db)
     user_details = await user_crud.find_user_by_email(user.email)
@@ -351,17 +321,6 @@ async def find_or_create_user(request: Request,response: Response, user: UserBas
         user_details = await user_crud.create_user(user)
         
     user_id = user_details.id
-    # Update geo-location details
-    print(user_details)
-    if user_details.geo_location_details == None:
-        update_object = await get_user_loc_details(user_id,request)
-        updated_details = await user_crud.add_geo_location_details(user_id,update_object)
-        if updated_details.geo_location_details: 
-            logger.info(f"Updated user location")  
-            user_details = updated_details
-        else:
-            logger.error(f"An error occcured while udpating user location : {e}")
-
     # Create session
     session_service = request.app.session_service
     session_id = await session_service.create_session(request,user_id=str(user_id))
@@ -396,7 +355,7 @@ async def find_or_create_user(request: Request,response: Response, user: UserBas
             resume_uploaded=onboarding_details.get("resume_uploaded")
         )
 
-    return UserResponseFromDB(
+    return UserResponse(
         id=user_id,
         email=user_details.email,
         provider=user_details.provider,
@@ -405,11 +364,10 @@ async def find_or_create_user(request: Request,response: Response, user: UserBas
         status=profile_status,
         token=access_token,
         onboarding_details=onboarding_response,
-        geo_location_details=user_details.geo_location_details
     )
 
 # Sign Up Function
-async def signUpUser(request: Request,response: Response, user: UserBase) -> UserResponseFromDB:
+async def signUpUser(request: Request,response: Response, user: UserBase) -> UserResponse:
     db = await get_database()
     user_crud = UserCRUD(db)
 
@@ -438,15 +396,6 @@ async def signUpUser(request: Request,response: Response, user: UserBase) -> Use
     # Create the user
     created_user = await user_crud.create_user(user)
     user_id = created_user.id
-
-    #Update geo location
-    update_object = await get_user_loc_details(user_id,request)
-    updated_details = await user_crud.add_geo_location_details(user_id,update_object)
-    if updated_details.geo_location_details: 
-        logger.info(f"Updated user location")  
-        user_details = updated_details
-    else:
-        logger.error(f"An error occcured while udpating user location : {e}")
 
     session_service = request.app.session_service
     # Create session
@@ -480,7 +429,7 @@ async def signUpUser(request: Request,response: Response, user: UserBase) -> Use
         )
     
     # Return the new user details
-    return UserResponseFromDB(
+    return UserResponse(
         id=user_id,
         email=created_user.email,
         provider=created_user.provider,
@@ -488,11 +437,10 @@ async def signUpUser(request: Request,response: Response, user: UserBase) -> Use
         created_at=created_user.created_at,
         status="new",
         onboarding_details=onboarding_response,
-        geo_location_details=created_user.geo_location_details
     )
 
 # Sign In Function
-async def signIn(request: Request,response: Response, email: str, password: Optional[str] = None, provider: str = "email") -> UserResponseFromDB:
+async def signIn(request: Request,response: Response, email: str, password: Optional[str] = None, provider: str = "email") -> UserResponse:
     db = await get_database()
     user_crud = UserCRUD(db)
 
@@ -574,7 +522,6 @@ async def signIn(request: Request,response: Response, email: str, password: Opti
         created_at=existing_user.created_at,
         status=profile_status,
         onboarding_details=onboarding_response,
-        geo_location_details=existing_user.geo_location_details
     )
 
 async def get_user_details_from_header(request: Request):

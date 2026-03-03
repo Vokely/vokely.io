@@ -11,15 +11,10 @@ import CubeLogo from "../icons/CubeLogo";
 import { ArrowUpRight } from "lucide-react";
 import TextLogo from "../icons/TextLogo";
 import AccountDetails from "./Accounts";
-import PricingSection from "../home/PricingSection";
 
 const AccountSection = ({ user, setIsAccountsOpen, setIsPricingOpen }) => {
   const rawPlan = (user?.plan_details?.name || "free").toLowerCase();
 
-  // Extract only the tier keyword, ignoring "tier", "monthly", etc.
-  // e.g. "gold tier monthly" -> "gold"
-  //      "pro_monthly"       -> "pro"
-  //      "silver-yearly"     -> "silver"
   const match = rawPlan.match(/(gold|silver|pro)/);
   const planType = match ? match[1] : "free";
   const planLabel = planType; // keep lowercase like the reference screenshot
@@ -119,11 +114,6 @@ export default function NewSideBar() {
 
   return (
     <>
-      {isPricingOpen && (
-        <div className="relative">
-          <PricingSection onClose={() => setIsPricingOpen(false)} isPopup={true} />
-        </div>
-      )}
       {isAccountsOpen && (
         <AccountDetails
           user={user}

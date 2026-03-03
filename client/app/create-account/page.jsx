@@ -320,31 +320,6 @@ export default function signup() {
                 {errors.password && <p className="error ml-2">{errors.password}</p>}
               </div>
 
-              {/* Checkbox */}
-              <div className={`flex items-center w-full my-2 gap-2 ${showTermsWarning ? 'bg-red-50 p-2 rounded-md border border-red-200' : ''}`}>
-                <input
-                  type="checkbox"
-                  id="agree"
-                  ref={termsCheckboxRef}
-                  className={`h-3 w-3 accent-primary cursor-pointer ${showTermsWarning ? 'ring-2 ring-red-400' : ''}`}
-                  checked={isCheckboxChecked}
-                  onClick={() => setIsCheckboxChecked(true)}
-                  disabled={isSubmitting}
-                  readOnly
-                />
-                <a
-                  className="text-sm text-[#6b6b6b] underline cursor-pointer"
-                  href='/terms'
-                >
-                  Agree to terms & conditions
-                </a>
-                {showTermsWarning && (
-                  <div className="flex items-center text-red-500 ml-2">
-                    <AlertCircle size={16} className="mr-1" />
-                    <span className="text-xs">Required</span>
-                  </div>
-                )}
-              </div>
 
               {/* Local Mode Message */}
               {isLocalMode && (

@@ -114,7 +114,7 @@ export default function EditorClient({ template,resumeId}) {
     languages,
     userImage:personalInfo.profileImage,
   };
-  const {checkFeatureExists,user,setUser} = useAuthStore();
+  const {user,setUser} = useAuthStore();
   const {setGetFeedback,isTourOpen,setIsTourOpen} = useNavigationStore();
 
   const [isChecked, setIsChecked] = useState(false);
@@ -1133,7 +1133,6 @@ const showFallbackContent = () => {
               {isJDActive ? "Back To Editor" : "Job Description"}
             </button>
           </div>
-        {checkFeatureExists("ai_resume_generator") && (
           <div
             className={`text-white font-semibold rounded-full px-4 py-2 text-center w-[60%] md:w-fit bg-primary relative ${showInfoDialog ? 'cursor-not-allowed pointer-events-none bg-primary/50' : 'cursor-pointer'}`}
             onClick={handleGenerate}
@@ -1155,7 +1154,6 @@ const showFallbackContent = () => {
                 Enhance using GenAI
               </button>
           </div>
-        )}
         </div>
 
       </div>

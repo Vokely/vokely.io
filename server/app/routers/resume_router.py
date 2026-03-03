@@ -10,9 +10,6 @@ from crud.user import get_user_details_from_header
 from crud.resumes import create_resume, update_resume_details, get_resume_details, delete_resume, find_all_resumes_of_user
 from crud.resumes import update_generated_data
 
-from dependencies.enforce_limits import feature_limit
-from dependencies.feature_usage_processor import track_feature_usage
-
 from utils.auth.csrf import set_csrf_cookie
 from utils.redis.redis_keys import RedisKeys
 from utils.auth.exceptions import CustomHTTPException
@@ -78,8 +75,6 @@ async def fetch_resumes(request: Request, response: Response):
         )
 
 @router.post("/create", status_code=status.HTTP_201_CREATED)
-@feature_limit(["resumes_created"])
-@track_feature_usage(["resumes_created"])
 async def create_new_resume(request: Request, resume_details: Dict[str, Any]):
     """
     API endpoint to create a new resume.

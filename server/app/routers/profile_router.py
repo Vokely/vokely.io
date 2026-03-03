@@ -5,15 +5,13 @@ from typing import Dict,Any
 import json
 from db.config import get_database
 
-from models.user import UserResponseFromDB
-from models.user_plan import UserPlanResponse
+from models.user import UserResponse
 from crud.user import UserCRUD,get_user_details_from_header
 from crud.profile import get_profile_details,store_or_update_profile
 
 from utils.redis.redis_keys import RedisKeys
 from utils.logger import logger
 
-from routers.user_router import find_or_create_user_plan
 router = APIRouter()
 
 async def get_user_crud():
@@ -44,18 +42,8 @@ async def fetch_user_details(request: Request, user_details: Dict[str, Any] = De
             response = JSONResponse(content=user_details)
             return response
         
-        if request.state.user_plan is not None:
-            plan_details = request.state.user_plan.get("plan_details")
-            plan_details["start_date"] = request.state.user_plan.get("start_date")
-            plan_details["expiry_date"] = request.state.user_plan.get("expiry_date")
-        else:
-            logger.debug("Fetching from DB")
-            plan_details = await find_or_create_user_plan(user_details)
-
-        plan_response = UserPlanResponse(**plan_details) if request.state.user_plan else None
-        response = UserResponseFromDB(
+        response = UserResponse(
             **user_details.model_dump(exclude={"hashed_password"}),
-            plan_details=plan_response.dict(),
             status="existing"
         )
         serialized_user = serialize_mongo_document(response.dict())

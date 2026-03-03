@@ -27,6 +27,33 @@ export const startVoiceInterview = async (resume_id, job_description) => {
   }
 };
 
+// LiveKit Voice Interview Functions
+export const startInterview = async (resume_id, job_description) => {
+  try {
+    const response = await customFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/interview/start_interview`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        resume_id,
+        job_description
+      })
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      return data;
+    } else {
+      console.error('Failed to start voice interview:', response.statusText);
+      return null;
+    }
+  } catch (error) {
+    console.error('Error starting voice interview:', error);
+    return null;
+  }
+};
+
 export const endVoiceInterview = async (session_id) => {
   try {
     const response = await customFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/voice-interview/end-voice-interview`, {

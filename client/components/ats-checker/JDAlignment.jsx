@@ -6,7 +6,6 @@ import { analyzeJD } from '@/lib/atsChecker';
 import useToastStore from '@/store/toastStore';
 import { useATSStore } from '@/store/atsStore';
 import { JDSubSections } from './JDSubSections';
-import PremiumOverlay from '../reusables/PremiumOverlay';
 
 const JDBackDropWrapper = ({ children }) => {
   return (
@@ -70,7 +69,6 @@ export const JDAlignmentSection = () => {
     <>
       <MainSection title="JD Alignment"></MainSection>
       <JDBackDropWrapper>
-       <PremiumOverlay featureName="jd_ats_checker">
          <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-medium text-gray-700">Paste your preferred Job Description</h2>
@@ -108,7 +106,6 @@ export const JDAlignmentSection = () => {
             className="w-full rounded-md border border-gray-300 px-4 py-3 text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none min-h-[80px]"
           />
         </div>
-       </PremiumOverlay>
       </JDBackDropWrapper>
       {JDAnalysis!=null && <JDSubSections data={JDAnalysis}/>}
     </>
