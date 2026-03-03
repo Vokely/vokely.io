@@ -34,7 +34,6 @@
     "d3-geo-projection": "^4.0.0",
     "d3-timer": "^3.0.1",
     "date-fns": "^4.1.0",
-    "dodopayments-checkout": "^1.0.1",
     "fabric": "^6.5.4",
     "framer-motion": "^12.4.7",
     "github-slugger": "^2.0.0",

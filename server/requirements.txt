@@ -94,16 +94,12 @@ Deprecated==1.2.18
 limits==4.4.1
 slowapi==0.1.9
 wrapt==1.17.2
-#payments
-dodopayments
 #ocr
 pytesseract==0.3.13
 pymupdf==1.25.5
 httpx==0.28.1
 #logging
 colorlog==6.9.0
-#webhook signature verify Dodo
-standardwebhooks==1.0.0
 #ats nlp resume analysis
 spacy==3.8.7
 https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl
